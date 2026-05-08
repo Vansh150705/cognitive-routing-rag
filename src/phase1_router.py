@@ -50,7 +50,7 @@ def build_persona_index():
     return index, bot_ids
 
 
-def route_post_to_bots(post_content, threshold=0.40, index=None, bot_ids=None):
+def route_post_to_bots(post_content, threshold=0.20, index=None, bot_ids=None):
     if index is None or bot_ids is None:
         index, bot_ids = build_persona_index()
     post_vec = get_embedding(post_content).reshape(1, -1)
