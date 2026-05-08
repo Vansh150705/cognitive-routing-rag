@@ -75,7 +75,7 @@ if __name__ == "__main__":
     idx, ids = build_persona_index()
     for post in test_posts:
         print(f"\n[post] {post!r}")
-        results = route_post_to_bots(post, threshold=0.40, index=idx, bot_ids=ids)
+        results = route_post_to_bots(post, threshold=0.20, index=idx, bot_ids=ids)
         if results:
             print(f"  → routed to: {[r['bot_id'] for r in results]}")
         else:
