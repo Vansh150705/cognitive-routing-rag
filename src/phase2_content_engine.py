@@ -11,7 +11,7 @@ from pathlib import Path
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 llm = ChatGroq(
-    model="llama3-70b-8192",
+    model="llama-3.3-70b-versatile",
     temperature=0.8,
     api_key=os.getenv("GROQ_API_KEY"),
 )
