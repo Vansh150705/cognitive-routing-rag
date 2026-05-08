@@ -7,7 +7,8 @@ from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from dotenv import load_dotenv
-load_dotenv()
+from pathlib import Path
+load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 llm = ChatGroq(
     model="llama3-8b-8192",
