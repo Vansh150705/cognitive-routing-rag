@@ -47,7 +47,7 @@ THREAD CONTEXT (full RAG):
 TASK: Reply to the latest human message using full thread context. Max 280 characters. Sound like a real person arguing online."""
 
     response = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.3-70b-versatile",
         temperature=0.85,
         messages=[
             {"role": "system", "content": system_prompt},
