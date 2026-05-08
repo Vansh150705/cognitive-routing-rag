@@ -1,10 +1,19 @@
+"""
+Phase 1: Vector-Based Persona Matching
+--------------------------------------
+Embeddings: sentence-transformers (local, no API key needed)
+Vector store: FAISS IndexFlatIP — normalised vectors = cosine similarity.
+"""
+
 import os
 import numpy as np
 import faiss
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-
 from dotenv import load_dotenv
+from sentence_transformers import SentenceTransformer
+
 load_dotenv()
+
+_model = SentenceTransformer("all-MiniLM-L6-v2")
 
 BOT_PERSONAS = {
     "bot_a": (
@@ -24,15 +33,12 @@ BOT_PERSONAS = {
     ),
 }
 
-_embedder = GoogleGenerativeAIEmbeddings(
-    model="models/text-embedding-001",
-    google_api_key=os.getenv("GOOGLE_API_KEY"),
-)
 
 def get_embedding(text: str) -> np.ndarray:
-    vec = np.array(_embedder.embed_query(text), dtype="float32")
-    vec /= np.linalg.norm(vec)
+    """Return a unit-normalised embedding vector for text."""
+    vec = _model.encode(text, normalize_embeddings=True).astype("float32")
     return vec
+
 
 def build_persona_index():
     bot_ids = list(BOT_PERSONAS.keys())
@@ -42,6 +48,7 @@ def build_persona_index():
     index.add(embeddings)
     print(f"[phase1] persona index built — {index.ntotal} vectors, dim={dim}")
     return index, bot_ids
+
 
 def route_post_to_bots(post_content, threshold=0.40, index=None, bot_ids=None):
     if index is None or bot_ids is None:
@@ -58,6 +65,7 @@ def route_post_to_bots(post_content, threshold=0.40, index=None, bot_ids=None):
     matched.sort(key=lambda x: x["similarity"], reverse=True)
     return matched
 
+
 if __name__ == "__main__":
     test_posts = [
         "OpenAI just released a new model that might replace junior developers.",
@@ -68,4 +76,7 @@ if __name__ == "__main__":
     for post in test_posts:
         print(f"\n[post] {post!r}")
         results = route_post_to_bots(post, threshold=0.40, index=idx, bot_ids=ids)
-        print(f"  → routed to: {[r['bot_id'] for r in results]}" if results else "  → no bots matched")
+        if results:
+            print(f"  → routed to: {[r['bot_id'] for r in results]}")
+        else:
+            print("  → no bots matched")
